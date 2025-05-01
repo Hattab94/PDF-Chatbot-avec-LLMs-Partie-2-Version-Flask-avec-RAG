@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Chatbot with Flask</title>
+</head>
+<body>
+    <h1>Upload PDF</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="pdf" required>
+        <button type="submit">Upload</button>
+    </form>
+    <h2>Ask a Question</h2>
+    <input type="text" id="question" placeholder="Type your question here">
+    <button onclick="askQuestion()">Ask</button>
+    <p id="response"></p>
+
+    <script>
+        document.getElementById("uploadForm").onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const res = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+            const result = await res.json();
+            alert(result.message || result.error);
+        }
+
+        async function askQuestion() {
+            const question = document.getElementById("question").value;
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+            const result = await res.json();
+            document.getElementById("response").innerText = result.answer || result.error;
+        }
+    </script>
+</body>
+</html>
